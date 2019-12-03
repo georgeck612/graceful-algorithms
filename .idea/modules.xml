@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/GracefulAlgorithm.iml" filepath="$PROJECT_DIR$/.idea/GracefulAlgorithm.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/GracefulAlgorithms.iml" filepath="$PROJECT_DIR$/.idea/GracefulAlgorithms.iml" />
+      <module fileurl="file://$USER_HOME$/graceful-algorithms/.idea/graceful-algorithms.iml" filepath="$USER_HOME$/graceful-algorithms/.idea/graceful-algorithms.iml" />
     </modules>
   </component>
 </project>

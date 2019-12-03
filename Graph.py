@@ -89,7 +89,10 @@ class Graph:
     def degree_sequence(self):
         result = []
         for vertex in self.graph.keys():
-            result.append(len(self.graph[vertex]))
+            if self.graph[vertex]:
+                result.append(len(self.graph[vertex]))
+            else:
+                result.append(0)
         return result
 
     def add_edge(self, u, v):
