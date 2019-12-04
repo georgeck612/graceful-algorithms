@@ -81,8 +81,15 @@ class Graph:
 
     @property
     def is_complete(self):
-        for num in self.degree_sequence():
-            if num != self.order - 1:
+        for vertex in self.graph.keys():
+            if vertex in self.graph[vertex] or len(self.graph[vertex]) != self.order - 1:
+                return False
+        return True
+
+    @property
+    def is_simple(self):
+        for vertex in self.graph.keys():
+            if vertex in self.graph[vertex] or len(self.graph[vertex]) != len(set(self.graph[vertex])):
                 return False
         return True
 
