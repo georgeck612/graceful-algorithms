@@ -112,7 +112,7 @@ def test_gracefulness(graph):
         print("Insufficient edges to permit a graceful labeling")
         return False
     if graph.is_eulerian and ((graph.size - 1) % 4 is 0 or (graph.size - 2) % 4 is 0):
-        print("Eulerian graphs with size m ≡ 1 (mod 4) or m ≡ 2 (mod 4) are not graceful (Rosa, A. 1967).")
+        print("Eulerian graphs with size m ≡ 1 or 2 (mod 4) are not graceful (Rosa, A. 1967).")
         return False
 
     total_labels = binomial(graph.size - 1, graph.order - 2) * (2 * graph.size) * factorial(graph.order - 2)
