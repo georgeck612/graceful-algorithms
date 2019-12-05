@@ -78,7 +78,7 @@ def check_valid_permutations(graph, arr, n):
             else:
                 arr[0], arr[i] = arr[i], arr[0]
 
-            if arr.index(graph.size) in graph.graph[arr.index(0)]:
+            if graph.graph[arr.index(0)] and (arr.index(graph.size) in graph.graph[arr.index(0)]):
                 labels_checked += 1
                 possible_labeling = format_labeling(arr)
                 result = is_graceful_labeling(graph, possible_labeling)
@@ -102,6 +102,9 @@ def format_labeling(labeling):
 
 
 def test_gracefulness(graph):
+    if not graph.is_simple:
+        print("Non-simple graphs are not graceful.")
+        return False
     if graph.is_complete and graph.order > 4:
         print("Complete graphs are only graceful for order ≤ 4.")
         return False
@@ -131,13 +134,14 @@ def test_gracefulness(graph):
             locale.format("%d", labels_checked, grouping=True)) + " (" + str(
             round(100 * labels_checked / total_labels, 2)) + "% of possible)" + "\nTime taken: " + str(
             locale.format("%d", round((end - start), 2), grouping=True)) + " seconds")
-        return
+        return True
     labels_checked += result[1]
 
     print("\nNo graceful labeling found." + "\nLabels checked: " + str(
         locale.format("%d", labels_checked, grouping=True)) + " (" + str(
         round(100 * labels_checked / total_labels, 2)) + "% of possible)" + "\nTime taken: " + str(
         locale.format("%d", round((end - start), 2), grouping=True)) + " seconds")
+    return False
 
 
 def binomial(x, y):
