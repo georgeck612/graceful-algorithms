@@ -1,6 +1,7 @@
-from Graph import Graph
-from exhaustive_search import test_gracefulness
 from playsound import playsound
+
+from src.Graph import Graph
+from src.exhaustive_search import test_gracefulness
 
 if __name__ == '__main__':
     # test of gracefulness on K_4
