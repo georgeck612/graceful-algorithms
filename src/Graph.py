@@ -103,4 +103,19 @@ class Graph:
         return result
 
     def add_edge(self, u, v):
-        self.graph[u].append(v)
+        flag = False
+        if u in self.graph.keys():
+            self.graph[u].append(v)
+        else:
+            self.graph[u] = [v]
+            flag = True
+        if v in self.graph.keys():
+            self.graph[v].append(u)
+        else:
+            self.graph[v] = [u]
+            flag = True
+        self.size += 1
+        self.edge_labels.append(self.size)
+        if flag:
+            self.order += 1
+        self.edges.append((u,v))
