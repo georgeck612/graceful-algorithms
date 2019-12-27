@@ -1,8 +1,38 @@
 import time
 import locale
 from math import factorial
+from random import shuffle
 
 locale.setlocale(locale.LC_ALL, 'en_US')
+
+
+def is_automorphism(graph, labeling1, labeling2):
+    for vertex in labeling1.keys():
+        label = labeling1[vertex]
+        neighbor_list = graph.graph[vertex]
+        neighbor_labels = []
+        for neighbor in neighbor_list:
+            neighbor_labels.append(labeling1[neighbor])
+
+        vertex_to_compare = None
+
+        for compared_vertex in labeling2.keys():
+            if labeling2[compared_vertex] == label:
+                vertex_to_compare = compared_vertex
+
+        if vertex_to_compare is None:
+            return False
+
+        compared_neighbor_list = graph.graph[vertex_to_compare]
+        compared_labels = []
+        for compared_neighbor in compared_neighbor_list:
+            compared_labels.append(labeling2[compared_neighbor])
+
+        for compared_label in compared_labels:
+            if compared_label not in neighbor_labels:
+                return False
+
+    return True
 
 
 def is_graceful_labeling(graph, labeling):
@@ -19,6 +49,114 @@ def is_graceful_labeling(graph, labeling):
             return False
 
     return True
+
+
+def get_dual_label_set(label_set, size):
+    dual = []
+    for label in label_set:
+        dual.append(size - label)
+    return sorted(dual)
+
+
+def get_valid_label_sets(graph):
+    result = []
+
+    r = graph.order
+
+    vertex_labels = []
+    for i in range(0, graph.size + 1):
+        vertex_labels.append(i)
+
+    shuffle(vertex_labels)
+
+    pool = tuple(vertex_labels)
+    n = len(pool)
+    if r > n:
+        return
+    indices = list(range(r))
+    combo = tuple(pool[i] for i in indices)
+    if sorted(combo) not in result:
+        if 0 in combo and graph.size in combo:
+            is_graceful = check_valid_permutations(graph, list(combo), len(combo))
+            if is_graceful[0]:
+                result.append(sorted(list(combo)))
+                result.append(get_dual_label_set(combo, graph.size))
+    count = 0
+    while True:
+        count += 1
+        for i in reversed(range(r)):
+            if indices[i] != i + n - r:
+                break
+        else:
+            return result
+        indices[i] += 1
+        for j in range(i + 1, r):
+            indices[j] = indices[j - 1] + 1
+        combo = tuple(pool[i] for i in indices)
+        if sorted(combo) not in result:
+            if 0 in combo and graph.size in combo:
+                is_graceful = check_valid_permutations(graph, list(combo), len(combo))
+                if is_graceful[0]:
+                    result.append(sorted(list(combo)))
+                    result.append(get_dual_label_set(combo, graph.size))
+
+
+def get_graceful_labelings_from_label_set(graph, label_set):
+    n = len(label_set)
+    result = []
+    labels_checked = 0
+
+    c = []
+
+    for i in range(0, n):
+        c.append(0)
+
+    if label_set.index(graph.size) in graph.graph[label_set.index(0)]:
+        labels_checked += 1
+        possible_labeling = format_labeling(label_set)
+        is_graceful = is_graceful_labeling(graph, possible_labeling)
+        if is_graceful:
+            result.append(possible_labeling)
+
+    i = 0
+    while i < n:
+        if c[i] < i:
+            if i & 1:
+                label_set[c[i]], label_set[i] = label_set[i], label_set[c[i]]
+            else:
+                label_set[0], label_set[i] = label_set[i], label_set[0]
+
+            if graph.graph[label_set.index(0)] and (label_set.index(graph.size) in graph.graph[label_set.index(0)]):
+                labels_checked += 1
+                possible_labeling = format_labeling(label_set)
+                is_graceful = is_graceful_labeling(graph, possible_labeling)
+                if is_graceful:
+                    result.append(possible_labeling)
+            c[i] += 1
+
+            i = 0
+        else:
+            c[i] = 0
+            i += 1
+
+    return result
+
+
+def get_num_representative_labels(graph, label_set):
+    representative_label_set = []
+    result = 1
+    graceful_labels = get_graceful_labelings_from_label_set(graph, label_set)
+    representative_label_set.append(graceful_labels[0])
+    for i in range(1, len(graceful_labels)):
+        for j in range(0, len(representative_label_set)):
+            if is_automorphism(graph, graceful_labels[i], representative_label_set[j]):
+                break
+            if j == len(representative_label_set) - 1:
+                result += 1
+                representative_label_set.append(graceful_labels[i])
+                break
+
+    return result
 
 
 def find_combinations(graph, iterable, r):
@@ -56,19 +194,23 @@ def find_combinations(graph, iterable, r):
 
 
 def check_valid_permutations(graph, arr, n):
+    bad_labelings = []
     labels_checked = 0
 
     c = []
 
     for i in range(0, n):
         c.append(0)
-
     if arr.index(graph.size) in graph.graph[arr.index(0)]:
         labels_checked += 1
         possible_labeling = format_labeling(arr)
+
         result = is_graceful_labeling(graph, possible_labeling)
         if result:
             return True, possible_labeling, labels_checked
+        else:
+            bad_labelings.append(possible_labeling)
+
 
     i = 0
     while i < n:
@@ -84,6 +226,8 @@ def check_valid_permutations(graph, arr, n):
                 result = is_graceful_labeling(graph, possible_labeling)
                 if result:
                     return True, possible_labeling, labels_checked
+                else:
+                    bad_labelings.append(possible_labeling)
             c[i] += 1
 
             i = 0
@@ -123,6 +267,8 @@ def test_gracefulness(graph):
     vertex_labels = []
     for i in range(0, graph.size + 1):
         vertex_labels.append(i)
+
+    shuffle(vertex_labels)
 
     labels_checked = 0
 
