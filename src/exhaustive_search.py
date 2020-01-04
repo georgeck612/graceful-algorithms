@@ -142,9 +142,8 @@ def get_graceful_labelings_from_label_set(graph, label_set):
     return result
 
 
-def get_num_representative_labels(graph, label_set):
+def get_representative_labels(graph, label_set):
     representative_label_set = []
-    result = 1
     graceful_labels = get_graceful_labelings_from_label_set(graph, label_set)
     representative_label_set.append(graceful_labels[0])
     for i in range(1, len(graceful_labels)):
@@ -152,11 +151,10 @@ def get_num_representative_labels(graph, label_set):
             if is_automorphism(graph, graceful_labels[i], representative_label_set[j]):
                 break
             if j == len(representative_label_set) - 1:
-                result += 1
                 representative_label_set.append(graceful_labels[i])
                 break
 
-    return result
+    return representative_label_set
 
 
 def find_combinations(graph, iterable, r):
