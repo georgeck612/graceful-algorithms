@@ -1,6 +1,7 @@
 import time
 import locale
 from math import factorial
+from random import shuffle
 
 locale.setlocale(locale.LC_ALL, 'en_US')
 
