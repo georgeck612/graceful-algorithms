@@ -7,32 +7,49 @@ locale.setlocale(locale.LC_ALL, 'en_US')
 
 
 def is_automorphism(graph, labeling1, labeling2):
-    for vertex in labeling1.keys():
+    """Determines if two graceful labelings on a given graph are automorphisms of each other.
+
+    Process is to select a vertex from the first labeling, then find its corresponding vertex in the other labeling;
+    that is, the vertex with the same label. Then, make sure that both vertices' neighbors also have the same
+    corresponding labels. If they do, we pick another vertex from the first labeling, and so on until we have moved
+    through all the vertices, in which case we have an automorphism, or until we have a mismatch, in which case we
+    don't.
+
+    This method assumes that both labelings given are on the same graph, and that graph is the one provided in the
+    input; it does not check the arguments passed for validity. This essentially means that it assumes that the number
+    of vertices in both labelings and the graph are the same. If this is not the case, then the method may not return
+    a correct result.
+    """
+
+    # TODO: needs research on if this is the best method possible
+
+    for vertex in labeling1.keys():  # pick a vertex in the first labeling
         label = labeling1[vertex]
-        neighbor_list = graph.graph[vertex]
+        neighbor_list = graph.graph[vertex]  # gets neighbors of current vertex
         neighbor_labels = []
-        for neighbor in neighbor_list:
+        for neighbor in neighbor_list:  # records labels of each neighbor in a list
             neighbor_labels.append(labeling1[neighbor])
 
-        vertex_to_compare = None
+        vertex_to_compare = None  # need to find the vertex in other labeling with the same label as the current vertex
 
-        for compared_vertex in labeling2.keys():
+        for compared_vertex in labeling2.keys():  # finds corresponding vertex in other label
             if labeling2[compared_vertex] == label:
                 vertex_to_compare = compared_vertex
+                break
 
-        if vertex_to_compare is None:
+        if vertex_to_compare is None:  # if we couldn't find a vertex with the same label, we're done
             return False
 
-        compared_neighbor_list = graph.graph[vertex_to_compare]
+        compared_neighbor_list = graph.graph[vertex_to_compare]  # gets neighbors of the corresponding vertex we found
         compared_labels = []
-        for compared_neighbor in compared_neighbor_list:
+        for compared_neighbor in compared_neighbor_list:  # records labels of these neighbors in a list
             compared_labels.append(labeling2[compared_neighbor])
 
-        for compared_label in compared_labels:
+        for compared_label in compared_labels:  # finally compare all the neighbors of both vertices; they should match
             if compared_label not in neighbor_labels:
                 return False
 
-    return True
+    return True  # if we can go through above process for all vertices in the labeling, we have an automorphism
 
 
 def is_graceful_labeling(graph, labeling):
